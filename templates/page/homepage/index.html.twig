@@ -42,63 +42,6 @@
         </div>
     </section>
 
-    <section id="szkola" class="section split">
-        <div>
-            <p class="eyebrow">Dla kogo</p>
-            <h2>Dzieci i dorośli, ta sama godzina.</h2>
-            <p>Prowadzimy szkołę jazdy konnej. Lekcja trwa godzinę. Inaczej zaczyna dziecko, które pierwszy raz siada na konia, inaczej osoba dorosła, która uczy się od zera albo wraca do siodła.</p>
-            <div class="pair">
-                <article>
-                    <h3>Dzieci</h3>
-                    <p>Przy zapisie podajesz opiekuna, telefon i e-mail. Konie dobieramy spokojniej, do pierwszych lekcji.</p>
-                </article>
-                <article>
-                    <h3>Dorośli</h3>
-                    <p>Ten sam padok i ten sam formularz. Opiekun nie jest potrzebny — zapisujesz się sam.</p>
-                </article>
-            </div>
-        </div>
-        <figure class="frame">
-            <img src="{{ asset('images/brzozy.jpg') }}" alt="Brzozowy zagajnik" width="1400" height="1050" loading="lazy" decoding="async">
-        </figure>
-    </section>
-
-    <section id="konie" class="section herd">
-        <div class="herd-copy">
-            <p class="eyebrow">Stado</p>
-            <h2>Cztery konie.</h2>
-            <ul class="names">
-                <li>Rychu</li>
-                <li>Ksenia</li>
-                <li>Fruzia</li>
-                <li>Drago</li>
-            </ul>
-            <p>Na nich prowadzimy jazdy. Konia dobieramy do jeźdźca w chwili zapisu — dziecko i osoba dorosła nie muszą jechać na tym samym.</p>
-        </div>
-        <div class="portraits">
-            <figure>
-                <img src="{{ asset('images/rychu.jpg') }}" alt="Rychu, kary koń z białą strzałką na czole" width="616" height="778" loading="lazy" decoding="async">
-                <figcaption>Rychu</figcaption>
-            </figure>
-            <figure>
-                <img src="{{ asset('images/ksenia.jpg') }}" alt="Ksenia, siwy koń" width="614" height="775" loading="lazy" decoding="async">
-                <figcaption>Ksenia</figcaption>
-            </figure>
-        </div>
-    </section>
-
-    <section id="bibi" class="bibi">
-        <figure class="frame">
-            <img src="{{ asset('images/bibi.jpg') }}" alt="Bibi, owca stajni" width="868" height="864" loading="lazy" decoding="async">
-        </figure>
-        <div>
-            <p class="eyebrow">Owca stajni</p>
-            <h2>Bibi</h2>
-            <p>Bibi mieszka przy szkole i ma własny profil. HRABHILL jest na Instagramie, owca — osobno.</p>
-            <p><a class="text-link" href="https://www.instagram.com/bibi_owieczka_/" rel="noopener noreferrer">@bibi_owieczka_</a></p>
-        </div>
-    </section>
-
     <section id="rezerwacja" class="section booking{% if availability.state|default('disabled') == 'ok' %} booking-open{% endif %}">
         <div class="booking-head">
             <p class="eyebrow">Kalendarz</p>
@@ -274,6 +217,63 @@
                 </div>
             </form>
         {% endif %}
+    </section>
+
+    <section id="szkola" class="section split">
+        <div>
+            <p class="eyebrow">Dla kogo</p>
+            <h2>Dzieci i dorośli, ta sama godzina.</h2>
+            <p>Prowadzimy szkołę jazdy konnej. Lekcja trwa godzinę. Inaczej zaczyna dziecko, które pierwszy raz siada na konia, inaczej osoba dorosła, która uczy się od zera albo wraca do siodła.</p>
+            <div class="pair">
+                <article>
+                    <h3>Dzieci</h3>
+                    <p>Przy zapisie podajesz opiekuna, telefon i e-mail. Konie dobieramy spokojniej, do pierwszych lekcji.</p>
+                </article>
+                <article>
+                    <h3>Dorośli</h3>
+                    <p>Ten sam padok i ten sam formularz. Opiekun nie jest potrzebny — zapisujesz się sam.</p>
+                </article>
+            </div>
+        </div>
+        <figure class="frame">
+            <img src="{{ asset('images/brzozy.jpg') }}" alt="Brzozowy zagajnik" width="1400" height="1050" loading="lazy" decoding="async">
+        </figure>
+    </section>
+
+    <section id="konie" class="section herd">
+        <div class="herd-copy">
+            <p class="eyebrow">Stado</p>
+            <h2>Cztery konie.</h2>
+            <ul class="names">
+                <li>Rychu</li>
+                <li>Ksenia</li>
+                <li>Fruzia</li>
+                <li>Drago</li>
+            </ul>
+            <p>Na nich prowadzimy jazdy. Konia dobieramy do jeźdźca w chwili zapisu — dziecko i osoba dorosła nie muszą jechać na tym samym.</p>
+        </div>
+        <div class="portraits">
+            <figure>
+                <img src="{{ asset('images/rychu.jpg') }}" alt="Rychu, kary koń z białą strzałką na czole" width="616" height="778" loading="lazy" decoding="async">
+                <figcaption>Rychu</figcaption>
+            </figure>
+            <figure>
+                <img src="{{ asset('images/ksenia.jpg') }}" alt="Ksenia, siwy koń" width="614" height="775" loading="lazy" decoding="async">
+                <figcaption>Ksenia</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section id="bibi" class="bibi">
+        <figure class="frame">
+            <img src="{{ asset('images/bibi.jpg') }}" alt="Bibi, owca stajni" width="868" height="864" loading="lazy" decoding="async">
+        </figure>
+        <div>
+            <p class="eyebrow">Owca stajni</p>
+            <h2>Bibi</h2>
+            <p>Bibi mieszka przy szkole i ma własny profil. HRABHILL jest na Instagramie, owca — osobno.</p>
+            <p><a class="text-link" href="https://www.instagram.com/bibi_owieczka_/" rel="noopener noreferrer">@bibi_owieczka_</a></p>
+        </div>
     </section>
 
     <section class="partner">
