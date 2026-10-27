@@ -1,0 +1,10 @@
+.git
+.idea
+.vscode
+var
+vendor
+.env.local
+.env.*.local
+*.md
+!EASYPANEL.md
+!README.md

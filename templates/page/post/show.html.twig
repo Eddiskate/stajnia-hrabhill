@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ post.title }} — HRABHILL{% endblock %}
+{% block description %}{{ post.header|default(post.title)|striptags|slice(0, 160) }}{% endblock %}
+
+{% block head %}
+    {% if post.imageUrl|default %}
+        <link rel="preload" as="image" href="{{ post.imageUrl|img_thumb(1200) }}" fetchpriority="high">
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    {% set catalog = post.catalog|default({}) %}
+    <article class="sheet entry">
+        <p class="meta">
+            <a href="{{ path('page_homepage') }}">HRABHILL</a>
+            · <a href="{{ path('page_post_index') }}">Blog</a>
+            {% if catalog.slug|default %}
+                · <a href="{{ path('page_post_catalog', {slug: catalog.slug}) }}">{{ catalog.name }}</a>
+            {% endif %}
+        </p>
+        <h1>{{ post.title }}</h1>
+        {% if post.createdAt|default %}<p class="meta">{{ post.createdAt }}</p>{% endif %}
+
+        {% if post.imageUrl|default %}
+            <figure class="frame entry-photo">
+                <img src="{{ post.imageUrl|img_thumb(1200) }}"
+                     srcset="{{ post.imageUrl|img_thumb(640) }} 640w, {{ post.imageUrl|img_thumb(1200) }} 1200w"
+                     sizes="(max-width: 800px) 100vw, 760px"
+                     alt="{{ post.title }}"
+                     width="1200"
+                     height="675"
+                     fetchpriority="high"
+                     decoding="async">
+            </figure>
+        {% endif %}
+
+        {% if post.header|default %}
+            <p class="lede">{{ post.header|striptags }}</p>
+        {% endif %}
+
+        <div class="prose">
+            {{ post.description|default('')|optimize_html_images(960) }}
+        </div>
+    </article>
+
+    {% set recent = recent_posts(4) %}
+    {% if recent %}
+        <aside class="sheet recent">
+            <h2>Ostatnie wpisy</h2>
+            <ul class="post-list">
+                {% for item in recent %}
+                    {% if item.slug != post.slug %}
+                        <li>
+                            <a href="{{ path('page_post_show', {slug: item.slug}) }}">
+                                <strong>{{ item.title }}</strong>
+                                <em>{{ item.createdAt|default('') }}</em>
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </aside>
+    {% endif %}
+{% endblock %}

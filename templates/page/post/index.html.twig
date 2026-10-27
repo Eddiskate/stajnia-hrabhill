@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ postCatalog.name|default('Blog') }} — HRABHILL{% endblock %}
+{% block description %}Wpisy szkoły jazdy konnej HRABHILL.{% endblock %}
+
+{% block body %}
+    <div class="sheet">
+        <p class="eyebrow">Blog</p>
+        <h1>{{ postCatalog.name|default('Ze stajni') }}</h1>
+        {% if postCatalog.description|default %}
+            <p class="lede">{{ postCatalog.description|striptags }}</p>
+        {% endif %}
+
+        {% if posts %}
+            <div class="articles">
+                {% for post in posts %}
+                    <article class="article-row">
+                        {% if post.imageUrl|default %}
+                            <a class="article-photo" href="{{ path('page_post_show', {slug: post.slug}) }}">
+                                <img src="{{ post.imageUrl|img_thumb(640) }}" alt="" width="640" height="400" {% if loop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async">
+                            </a>
+                        {% endif %}
+                        <div>
+                            <p class="meta">{{ post.catalog.name|default('') }} {% if post.createdAt|default %}· {{ post.createdAt }}{% endif %}</p>
+                            <h2><a href="{{ path('page_post_show', {slug: post.slug}) }}">{{ post.title }}</a></h2>
+                            <p>{{ post.header|default('')|striptags|slice(0, 220) }}</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Nie ma jeszcze wpisów{% if postCatalog|default %} w tej kategorii{% endif %}. Wróć na <a href="{{ path('page_homepage') }}">stronę HRABHILL</a>.</p>
+        {% endif %}
+    </div>
+{% endblock %}

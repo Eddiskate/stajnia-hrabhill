@@ -1,0 +1,341 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}HRABHILL — szkoła jazdy konnej{% endblock %}
+{% block description %}Szkoła jazdy konnej dla dzieci i dorosłych. Rychu, Ksenia, Fruzia, Drago i owca Bibi. Wolne terminy zapiszesz na stronie.{% endblock %}
+
+{% block head %}
+    <link rel="preload" as="image" href="{{ asset('images/hero.jpg') }}" fetchpriority="high">
+{% endblock %}
+
+{% block body %}
+    {% set values = form.values|default({}) %}
+    {% set errors = form.errors|default({}) %}
+
+    <section class="hero">
+        <div class="hero-copy">
+            <p class="eyebrow">Szkoła jazdy konnej</p>
+            <h1 class="wordmark">HRABHILL</h1>
+            <p class="lede">Szkoła jazdy konnej dla dzieci i dorosłych. Godzina jazdy, koń dobrany do osoby i termin, który widać w kalendarzu stajni.</p>
+            <div class="hero-actions">
+                <a class="button" href="#rezerwacja">Wolne terminy</a>
+                <a class="button ghost" href="https://www.instagram.com/koniewsrodbrzoz/" rel="noopener noreferrer">Instagram stajni</a>
+            </div>
+        </div>
+        <div class="hero-photo" data-slideshow role="region" aria-roledescription="karuzela" aria-label="Zdjęcia szkoły">
+            <div class="slides">
+                <figure class="slide is-on">
+                    <img src="{{ asset('images/hero.jpg') }}" alt="Szkoła HRABHILL: ludzie, konie i pies wśród drzew" width="786" height="778" fetchpriority="high" decoding="async">
+                </figure>
+                <figure class="slide">
+                    <img src="{{ asset('images/ksenia.jpg') }}" alt="Ksenia, siwy koń" width="614" height="775" decoding="async">
+                    <figcaption>Ksenia</figcaption>
+                </figure>
+                <figure class="slide">
+                    <img src="{{ asset('images/rychu.jpg') }}" alt="Rychu, kary koń" width="616" height="778" decoding="async">
+                    <figcaption>Rychu</figcaption>
+                </figure>
+            </div>
+            <div class="slide-ui">
+                <button type="button" data-dir="-1" aria-label="Poprzednie zdjęcie"></button>
+                <button type="button" data-dir="1" aria-label="Następne zdjęcie"></button>
+            </div>
+        </div>
+    </section>
+
+    <section id="szkola" class="section split">
+        <div>
+            <p class="eyebrow">Dla kogo</p>
+            <h2>Dzieci i dorośli, ta sama godzina.</h2>
+            <p>Prowadzimy szkołę jazdy konnej. Lekcja trwa godzinę. Inaczej zaczyna dziecko, które pierwszy raz siada na konia, inaczej osoba dorosła, która uczy się od zera albo wraca do siodła.</p>
+            <div class="pair">
+                <article>
+                    <h3>Dzieci</h3>
+                    <p>Przy zapisie podajesz opiekuna, telefon i e-mail. Konie dobieramy spokojniej, do pierwszych lekcji.</p>
+                </article>
+                <article>
+                    <h3>Dorośli</h3>
+                    <p>Ten sam padok i ten sam formularz. Opiekun nie jest potrzebny — zapisujesz się sam.</p>
+                </article>
+            </div>
+        </div>
+        <figure class="frame">
+            <img src="{{ asset('images/brzozy.jpg') }}" alt="Brzozowy zagajnik" width="1400" height="1050" loading="lazy" decoding="async">
+        </figure>
+    </section>
+
+    <section id="konie" class="section herd">
+        <div class="herd-copy">
+            <p class="eyebrow">Stado</p>
+            <h2>Cztery konie.</h2>
+            <ul class="names">
+                <li>Rychu</li>
+                <li>Ksenia</li>
+                <li>Fruzia</li>
+                <li>Drago</li>
+            </ul>
+            <p>Na nich prowadzimy jazdy. Konia dobieramy do jeźdźca w chwili zapisu — dziecko i osoba dorosła nie muszą jechać na tym samym.</p>
+        </div>
+        <div class="portraits">
+            <figure>
+                <img src="{{ asset('images/rychu.jpg') }}" alt="Rychu, kary koń z białą strzałką na czole" width="616" height="778" loading="lazy" decoding="async">
+                <figcaption>Rychu</figcaption>
+            </figure>
+            <figure>
+                <img src="{{ asset('images/ksenia.jpg') }}" alt="Ksenia, siwy koń" width="614" height="775" loading="lazy" decoding="async">
+                <figcaption>Ksenia</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section id="bibi" class="bibi">
+        <figure class="frame">
+            <img src="{{ asset('images/bibi.jpg') }}" alt="Owca na pastwisku" width="1200" height="901" loading="lazy" decoding="async">
+        </figure>
+        <div>
+            <p class="eyebrow">Owca stajni</p>
+            <h2>Bibi</h2>
+            <p>Bibi mieszka przy szkole i ma własny profil. HRABHILL jest na Instagramie, owca — osobno.</p>
+            <p><a class="text-link" href="https://www.instagram.com/bibi_owieczka_/" rel="noopener noreferrer">@bibi_owieczka_</a></p>
+        </div>
+    </section>
+
+    <section id="rezerwacja" class="section booking">
+        <div>
+            <p class="eyebrow">Kalendarz</p>
+            <h2>Zapisz jazdę.</h2>
+            <p>Wybierz wolne okno. Zapis od razu zajmuje konia w kalendarzu stajni na jedną godzinę. Najwcześniej {{ availability.leadHours|default(12) }} godzin wcześniej, do dwóch tygodni do przodu.</p>
+            <p>Jeśli godziny nie ma na liście, napisz na <a href="https://www.instagram.com/koniewsrodbrzoz/" rel="noopener noreferrer">Instagramie stajni</a>.</p>
+        </div>
+
+        <div class="card">
+            {% if app.request.query.get('zapisano') == '1' and not errors %}
+                <p class="banner ok" role="status">
+                    {% if app.request.query.get('termin') %}
+                        Termin zapisany: {{ app.request.query.get('termin') }}{% if app.request.query.get('kon') %}, koń {{ app.request.query.get('kon') }}{% endif %}. Do zobaczenia w stajni.
+                    {% else %}
+                        Przyjęliśmy zgłoszenie. Do zobaczenia w stajni.
+                    {% endif %}
+                </p>
+            {% endif %}
+
+            {% if errors.form|default %}
+                <p class="banner bad" role="alert">{{ errors.form }}</p>
+            {% endif %}
+
+            {% if availability.state|default('disabled') != 'ok' %}
+                <p class="banner quiet">{{ availability.error }}</p>
+            {% else %}
+                <form method="post" action="{{ path('page_reservation') }}#rezerwacja" novalidate>
+                    <div class="hp" aria-hidden="true">
+                        <label>Zostaw puste<input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+                    </div>
+
+                    <fieldset class="kinds">
+                        <legend>Kto jedzie</legend>
+                        <label><input type="radio" name="rider_kind" value="child" {% if values.rider_kind|default('child') != 'adult' %}checked{% endif %}> Dziecko</label>
+                        <label><input type="radio" name="rider_kind" value="adult" {% if values.rider_kind|default('') == 'adult' %}checked{% endif %}> Dorosły</label>
+                    </fieldset>
+                    {% if errors.rider_kind|default %}<p class="field-error">{{ errors.rider_kind }}</p>{% endif %}
+
+                    <div class="two">
+                        <label class="field">
+                            <span>Imię jeźdźca</span>
+                            <input name="first_name" autocomplete="given-name" required maxlength="60" value="{{ values.first_name|default('') }}">
+                        </label>
+                        <label class="field">
+                            <span>Nazwisko</span>
+                            <input name="last_name" autocomplete="family-name" required maxlength="60" value="{{ values.last_name|default('') }}">
+                        </label>
+                    </div>
+                    {% if errors.name|default %}<p class="field-error">{{ errors.name }}</p>{% endif %}
+
+                    <div data-guardian {% if values.rider_kind|default('child') == 'adult' %}hidden{% endif %}>
+                        <label class="field">
+                            <span>Opiekun</span>
+                            <input name="guardian_name" autocomplete="name" maxlength="60" value="{{ values.guardian_name|default('') }}">
+                        </label>
+                        {% if errors.guardian_name|default %}<p class="field-error">{{ errors.guardian_name }}</p>{% endif %}
+                    </div>
+
+                    <div class="two">
+                        <label class="field">
+                            <span>Telefon</span>
+                            <input name="phone" type="tel" autocomplete="tel" required maxlength="20" value="{{ values.phone|default('') }}">
+                        </label>
+                        <label class="field">
+                            <span>E-mail</span>
+                            <input name="email" type="email" autocomplete="email" required maxlength="120" value="{{ values.email|default('') }}">
+                        </label>
+                    </div>
+                    {% if errors.phone|default %}<p class="field-error">{{ errors.phone }}</p>{% endif %}
+                    {% if errors.email|default %}<p class="field-error">{{ errors.email }}</p>{% endif %}
+
+                    <label class="field">
+                        <span>Termin</span>
+                        <select id="slot" name="start" required>
+                            <option value="">Wybierz dzień i godzinę</option>
+                            {% for day in days %}
+                                <optgroup label="{{ day.label }}">
+                                    {% for slot in day.slots %}
+                                        <option value="{{ slot.start }}" data-horses="{{ slot.horseIds }}" {% if values.start|default('') == slot.start %}selected{% endif %}>
+                                            {{ slot.time }}–{{ slot.timeEnd }} · {{ slot.horseNames }}
+                                        </option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    {% if errors.start|default %}<p class="field-error">{{ errors.start }}</p>{% endif %}
+
+                    <label class="field">
+                        <span>Koń</span>
+                        <select id="horse" name="horse_id">
+                            <option value="">Bez znaczenia — dobierzcie</option>
+                            {% for horse in horses %}
+                                <option value="{{ horse.id }}" {% if values.horse_id|default('') == horse.id %}selected{% endif %}>{{ horse.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    {% if errors.horse_id|default %}<p class="field-error">{{ errors.horse_id }}</p>{% endif %}
+
+                    <label class="field">
+                        <span>Wiadomość <em>opcjonalnie</em></span>
+                        <textarea name="note" rows="3" maxlength="500">{{ values.note|default('') }}</textarea>
+                    </label>
+                    {% if errors.note|default %}<p class="field-error">{{ errors.note }}</p>{% endif %}
+
+                    <label class="check">
+                        <input type="checkbox" name="consent" value="1" {% if values.consent|default(false) %}checked{% endif %}>
+                        <span>Zgadzam się na zapis imienia, telefonu i e-maila w kalendarzu jazd, żeby zrealizować lekcję. <a href="{{ path('page_privacy') }}">Polityka prywatności</a>.</span>
+                    </label>
+                    {% if errors.consent|default %}<p class="field-error">{{ errors.consent }}</p>{% endif %}
+
+                    <button class="button" type="submit">Zapisz jazdę</button>
+                </form>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="partner">
+        <div class="band partner-inner">
+            <a class="partner-mark" href="https://hrabikon.pl/" rel="noopener noreferrer">
+                <img src="{{ asset('images/hrabikon.svg') }}" alt="Hrabikon" width="333" height="256">
+            </a>
+            <div>
+                <p class="eyebrow">Partner</p>
+                <h2>Sprzęt i odzież jeździecka.</h2>
+                <p>Kaski, bryczesy, ogłowia i rzeczy dla dzieci są w sklepie, z którym współpracujemy.</p>
+                <p><a class="button" href="https://hrabikon.pl/" rel="noopener noreferrer">Hrabikon</a></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section posts">
+        <div class="section-head">
+            <div>
+                <p class="eyebrow">Blog</p>
+                <h2>Ze stajni</h2>
+            </div>
+            <a class="text-link" href="{{ path('page_post_index') }}">Wszystkie wpisy</a>
+        </div>
+        {% if posts %}
+            <ul class="post-list">
+                {% for post in posts %}
+                    <li>
+                        <a href="{{ path('page_post_show', {slug: post.slug}) }}">
+                            <span>{{ post.catalog.name|default('Blog') }}</span>
+                            <strong>{{ post.title }}</strong>
+                            <em>{{ post.header|default('')|striptags|slice(0, 140) }}</em>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Wpisy pojawią się tutaj, gdy domena będzie podpięta w CMS.</p>
+        {% endif %}
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+(function () {
+    var form = document.querySelector('#rezerwacja form');
+    if (!form) return;
+    var slot = form.querySelector('#slot');
+    var horse = form.querySelector('#horse');
+    var guardian = form.querySelector('[data-guardian]');
+    var kinds = form.querySelectorAll('input[name="rider_kind"]');
+
+    function syncKind() {
+        var picked = form.querySelector('input[name="rider_kind"]:checked');
+        if (guardian) guardian.hidden = !!(picked && picked.value === 'adult');
+    }
+    kinds.forEach(function (input) { input.addEventListener('change', syncKind); });
+    syncKind();
+
+    if (!slot || !horse) return;
+    var all = Array.prototype.map.call(horse.options, function (opt) {
+        return { value: opt.value, text: opt.text };
+    });
+    function syncHorses() {
+        var selected = slot.options[slot.selectedIndex];
+        var allowed = (selected && selected.getAttribute('data-horses') || '').split(',').filter(Boolean);
+        var current = horse.value;
+        horse.replaceChildren();
+        all.forEach(function (opt) {
+            if (opt.value && allowed.length && allowed.indexOf(opt.value) === -1) return;
+            var node = document.createElement('option');
+            node.value = opt.value;
+            node.textContent = opt.text;
+            horse.appendChild(node);
+        });
+        if (current && Array.prototype.some.call(horse.options, function (opt) { return opt.value === current; })) {
+            horse.value = current;
+        }
+    }
+    slot.addEventListener('change', syncHorses);
+    syncHorses();
+})();
+(function () {
+    var root = document.querySelector('[data-slideshow]');
+    if (!root) return;
+    var slides = Array.prototype.slice.call(root.querySelectorAll('.slide'));
+    if (slides.length < 2) return;
+    var index = 0;
+    var timer = null;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function show(next) {
+        index = (next + slides.length) % slides.length;
+        slides.forEach(function (slide, i) {
+            var on = i === index;
+            slide.classList.toggle('is-on', on);
+            slide.setAttribute('aria-hidden', on ? 'false' : 'true');
+        });
+    }
+    function start() {
+        if (reduce || timer) return;
+        timer = window.setInterval(function () { show(index + 1); }, 7000);
+    }
+    function stop() {
+        if (!timer) return;
+        window.clearInterval(timer);
+        timer = null;
+    }
+    root.querySelectorAll('[data-dir]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            stop();
+            show(index + Number(button.getAttribute('data-dir')));
+        });
+    });
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', start);
+    slides.forEach(function (slide, i) {
+        slide.setAttribute('aria-hidden', i === 0 ? 'false' : 'true');
+    });
+    start();
+})();
+</script>
+{% endblock %}

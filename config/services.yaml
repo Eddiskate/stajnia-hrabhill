@@ -1,0 +1,37 @@
+parameters:
+    api_base_url: '%env(API_BASE_URL)%'
+    api_key: '%env(API_KEY)%'
+    cdn_url: '%env(CDN_URL)%'
+    app.hostname: '%env(APP_HOSTNAME)%'
+    jazdy_api_url: '%env(JAZDY_API_URL)%'
+    jazdy_api_key: '%env(JAZDY_API_KEY)%'
+    app.default_uri_fallback: 'http://127.0.0.1:8080'
+    app.trusted_proxies_fallback: '127.0.0.1'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\Service\ApiClient:
+        arguments:
+            $apiBaseUrl: '%api_base_url%'
+            $apiKey: '%api_key%'
+
+    App\Service\JazdyClient:
+        arguments:
+            $jazdyApiUrl: '%jazdy_api_url%'
+            $jazdyApiKey: '%jazdy_api_key%'
+
+    App\Service\ImageThumbnailService:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+            $appHostname: '%app.hostname%'
+            $cdnUrl: '%cdn_url%'
