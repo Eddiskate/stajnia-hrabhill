@@ -99,37 +99,81 @@
         </div>
     </section>
 
-    <section id="rezerwacja" class="section booking">
-        <div>
+    <section id="rezerwacja" class="section booking{% if availability.state|default('disabled') == 'ok' %} booking-open{% endif %}">
+        <div class="booking-head">
             <p class="eyebrow">Kalendarz</p>
             <h2>Zapisz jazdę.</h2>
-            <p>Wybierz wolne okno. Zapis od razu zajmuje konia w kalendarzu stajni na jedną godzinę. Najwcześniej {{ availability.leadHours|default(12) }} godzin wcześniej, do dwóch tygodni do przodu.</p>
+            <p>Wybierz wolną godzinę w planie. Zapis od razu zajmuje konia w kalendarzu stajni na jedną godzinę. Najwcześniej {{ availability.leadHours|default(12) }} godzin wcześniej, do dwóch tygodni do przodu.</p>
             <p>Jeśli godziny nie ma na liście, napisz na <a href="https://www.instagram.com/koniewsrodbrzoz/" rel="noopener noreferrer">Instagramie stajni</a>.</p>
         </div>
 
-        <div class="card">
-            {% if app.request.query.get('zapisano') == '1' and not errors %}
-                <p class="banner ok" role="status">
-                    {% if app.request.query.get('termin') %}
-                        Termin zapisany: {{ app.request.query.get('termin') }}{% if app.request.query.get('kon') %}, koń {{ app.request.query.get('kon') }}{% endif %}. Do zobaczenia w stajni.
-                    {% else %}
-                        Przyjęliśmy zgłoszenie. Do zobaczenia w stajni.
-                    {% endif %}
-                </p>
-            {% endif %}
+        {% if app.request.query.get('zapisano') == '1' and not errors %}
+            <p class="banner ok" role="status">
+                {% if app.request.query.get('termin') %}
+                    Termin zapisany: {{ app.request.query.get('termin') }}{% if app.request.query.get('kon') %}, koń {{ app.request.query.get('kon') }}{% endif %}. Do zobaczenia w stajni.
+                {% else %}
+                    Przyjęliśmy zgłoszenie. Do zobaczenia w stajni.
+                {% endif %}
+            </p>
+        {% endif %}
 
-            {% if errors.form|default %}
-                <p class="banner bad" role="alert">{{ errors.form }}</p>
-            {% endif %}
+        {% if errors.form|default %}
+            <p class="banner bad" role="alert">{{ errors.form }}</p>
+        {% endif %}
 
-            {% if availability.state|default('disabled') != 'ok' %}
+        {% if availability.state|default('disabled') != 'ok' %}
+            <div class="card">
                 <p class="banner quiet">{{ availability.error }}</p>
-            {% else %}
-                <form method="post" action="{{ path('page_reservation') }}#rezerwacja" novalidate>
-                    <div class="hp" aria-hidden="true">
-                        <label>Zostaw puste<input type="text" name="company" tabindex="-1" autocomplete="off"></label>
-                    </div>
+            </div>
+        {% else %}
+            <form class="booking-form" method="post" action="{{ path('page_reservation') }}#rezerwacja" novalidate data-planner>
+                <div class="hp" aria-hidden="true">
+                    <label>Zostaw puste<input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+                </div>
 
+                <div class="planner" role="group" aria-label="Wolne terminy">
+                    <div class="planner-days">
+                        {% for day in days %}
+                            <article class="planner-day">
+                                <header>
+                                    <strong>{{ day.weekday|capitalize }}</strong>
+                                    <span>{{ day.dayNum }} {{ day.monthShort }}</span>
+                                    <em>{{ day.slots|length }} {{ day.slots|length == 1 ? 'slot' : (day.slots|length < 5 ? 'sloty' : 'slotów') }}</em>
+                                </header>
+                                <ul>
+                                    {% for slot in day.slots %}
+                                        <li>
+                                            <button
+                                                type="button"
+                                                class="slot-pick{% if values.start|default('') == slot.start %} is-on{% endif %}"
+                                                data-start="{{ slot.start }}"
+                                                data-horses="{{ slot.horseIds }}"
+                                                data-label="{{ day.label }}, {{ slot.time }}"
+                                                aria-pressed="{{ values.start|default('') == slot.start ? 'true' : 'false' }}"
+                                            >
+                                                <span class="slot-time">{{ slot.time }}</span>
+                                                <span class="slot-hint">Wolne</span>
+                                            </button>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </article>
+                        {% else %}
+                            <p class="planner-empty">W tym oknie nie ma wolnych godzin. Napisz na Instagramie albo zajrzyj później.</p>
+                        {% endfor %}
+                    </div>
+                    <p class="planner-choice" data-pick-label>
+                        {% if values.start|default('') %}
+                            Wybrano termin.
+                        {% else %}
+                            Kliknij godzinę w planie.
+                        {% endif %}
+                    </p>
+                    <input type="hidden" id="slot" name="start" value="{{ values.start|default('') }}" required>
+                    {% if errors.start|default %}<p class="field-error">{{ errors.start }}</p>{% endif %}
+                </div>
+
+                <div class="card booking-details">
                     <fieldset class="kinds">
                         <legend>Kto jedzie</legend>
                         <label><input type="radio" name="rider_kind" value="child" {% if values.rider_kind|default('child') != 'adult' %}checked{% endif %}> Dziecko</label>
@@ -171,23 +215,6 @@
                     {% if errors.email|default %}<p class="field-error">{{ errors.email }}</p>{% endif %}
 
                     <label class="field">
-                        <span>Termin</span>
-                        <select id="slot" name="start" required>
-                            <option value="">Wybierz dzień i godzinę</option>
-                            {% for day in days %}
-                                <optgroup label="{{ day.label }}">
-                                    {% for slot in day.slots %}
-                                        <option value="{{ slot.start }}" data-horses="{{ slot.horseIds }}" {% if values.start|default('') == slot.start %}selected{% endif %}>
-                                            {{ slot.time }}–{{ slot.timeEnd }} · {{ slot.horseNames }}
-                                        </option>
-                                    {% endfor %}
-                                </optgroup>
-                            {% endfor %}
-                        </select>
-                    </label>
-                    {% if errors.start|default %}<p class="field-error">{{ errors.start }}</p>{% endif %}
-
-                    <label class="field">
                         <span>Koń</span>
                         <select id="horse" name="horse_id">
                             <option value="">Bez znaczenia — dobierzcie</option>
@@ -211,9 +238,9 @@
                     {% if errors.consent|default %}<p class="field-error">{{ errors.consent }}</p>{% endif %}
 
                     <button class="button" type="submit">Zapisz jazdę</button>
-                </form>
-            {% endif %}
-        </div>
+                </div>
+            </form>
+        {% endif %}
     </section>
 
     <section class="partner">
@@ -263,6 +290,8 @@
     if (!form) return;
     var slot = form.querySelector('#slot');
     var horse = form.querySelector('#horse');
+    var label = form.querySelector('[data-pick-label]');
+    var picks = Array.prototype.slice.call(form.querySelectorAll('.slot-pick'));
     var guardian = form.querySelector('[data-guardian]');
     var kinds = form.querySelectorAll('input[name="rider_kind"]');
 
@@ -277,9 +306,14 @@
     var all = Array.prototype.map.call(horse.options, function (opt) {
         return { value: opt.value, text: opt.text };
     });
+
+    function allowedHorses() {
+        var on = form.querySelector('.slot-pick.is-on');
+        return (on && on.getAttribute('data-horses') || '').split(',').filter(Boolean);
+    }
+
     function syncHorses() {
-        var selected = slot.options[slot.selectedIndex];
-        var allowed = (selected && selected.getAttribute('data-horses') || '').split(',').filter(Boolean);
+        var allowed = allowedHorses();
         var current = horse.value;
         horse.replaceChildren();
         all.forEach(function (opt) {
@@ -293,8 +327,31 @@
             horse.value = current;
         }
     }
-    slot.addEventListener('change', syncHorses);
-    syncHorses();
+
+    function selectPick(button) {
+        picks.forEach(function (pick) {
+            var on = pick === button;
+            pick.classList.toggle('is-on', on);
+            pick.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        slot.value = button ? button.getAttribute('data-start') || '' : '';
+        if (label) {
+            label.textContent = button
+                ? 'Wybrano: ' + (button.getAttribute('data-label') || button.textContent.trim())
+                : 'Kliknij godzinę w planie.';
+        }
+        syncHorses();
+    }
+
+    picks.forEach(function (button) {
+        button.addEventListener('click', function () {
+            selectPick(button.classList.contains('is-on') ? null : button);
+        });
+    });
+
+    var preselected = form.querySelector('.slot-pick.is-on');
+    if (preselected) selectPick(preselected);
+    else syncHorses();
 })();
 (function () {
     var root = document.querySelector('[data-slideshow]');

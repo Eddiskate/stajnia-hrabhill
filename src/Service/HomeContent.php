@@ -75,7 +75,16 @@ class HomeContent
             }
 
             $key = $start->format('Y-m-d');
-            $grouped[$key]['label'] = $this->dayLabel($start);
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'date' => $key,
+                    'label' => $this->dayLabel($start),
+                    'weekday' => $this->weekdayName($start),
+                    'dayNum' => $start->format('j'),
+                    'monthShort' => $this->monthShort($start),
+                    'slots' => [],
+                ];
+            }
             $grouped[$key]['slots'][] = [
                 'start' => $slot['start'],
                 'time' => $start->format('H:i'),
@@ -115,12 +124,24 @@ class HomeContent
 
     private function dayLabel(\DateTimeImmutable $dt): string
     {
-        $days = ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'];
         $months = [
             1 => 'stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca',
             'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia',
         ];
 
-        return $days[(int) $dt->format('w')] . ' ' . $dt->format('j') . ' ' . $months[(int) $dt->format('n')];
+        return $this->weekdayName($dt) . ' ' . $dt->format('j') . ' ' . $months[(int) $dt->format('n')];
+    }
+
+    private function weekdayName(\DateTimeImmutable $dt): string
+    {
+        return ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'][(int) $dt->format('w')];
+    }
+
+    private function monthShort(\DateTimeImmutable $dt): string
+    {
+        return [
+            1 => 'sty', 'lut', 'mar', 'kwi', 'maj', 'cze',
+            'lip', 'sie', 'wrz', 'paź', 'lis', 'gru',
+        ][(int) $dt->format('n')];
     }
 }

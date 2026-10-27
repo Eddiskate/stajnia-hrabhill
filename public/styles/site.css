@@ -207,6 +207,106 @@ em { font-style: italic; }
 .bibi a { color: #f0d2bf; }
 
 .booking { align-items: start; }
+.booking-open {
+    display: grid;
+    gap: 1.5rem;
+}
+.booking-head { max-width: 40rem; }
+.booking-form {
+    display: grid;
+    gap: 1.5rem;
+}
+.planner {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    padding: 0.85rem;
+}
+.planner-days {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(9.2rem, 1fr);
+    gap: 0.65rem;
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+    scroll-snap-type: x proximity;
+}
+.planner-day {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 0.7rem 0.65rem 0.75rem;
+    scroll-snap-align: start;
+    min-height: 14rem;
+}
+.planner-day header {
+    display: grid;
+    gap: 0.1rem;
+    margin-bottom: 0.7rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--line);
+}
+.planner-day header strong {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    font-weight: 560;
+    text-transform: capitalize;
+}
+.planner-day header span {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+.planner-day header em {
+    color: var(--clay);
+    font-style: normal;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.planner-day ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+}
+.slot-pick {
+    width: 100%;
+    display: grid;
+    gap: 0.1rem;
+    text-align: left;
+    font: inherit;
+    color: var(--ink);
+    background: transparent;
+    border: 1px dashed var(--line);
+    padding: 0.55rem 0.6rem;
+    cursor: pointer;
+}
+.slot-pick:hover { border-color: var(--moss); }
+.slot-pick.is-on {
+    background: #e4efe4;
+    border-style: solid;
+    border-color: var(--moss);
+}
+.slot-time {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+.slot-hint {
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+.slot-pick.is-on .slot-hint { color: var(--moss); }
+.planner-choice {
+    margin: 0.85rem 0 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+.planner-empty {
+    margin: 0;
+    padding: 1rem;
+    color: var(--muted);
+    grid-column: 1 / -1;
+}
+.booking-details { max-width: 36rem; }
 .card {
     background: var(--cream);
     border: 1px solid var(--line);
@@ -299,7 +399,9 @@ em { font-style: italic; }
     .hero-copy { padding: 3rem 3rem 4rem; }
     .hero-photo { min-height: 100%; }
     .partner-inner { grid-template-columns: auto 1fr; gap: 3rem; }
-    .split, .herd, .booking { grid-template-columns: 1.1fr 0.9fr; align-items: center; }
+    .split, .herd { grid-template-columns: 1.1fr 0.9fr; align-items: center; }
+    .booking:not(.booking-open) { grid-template-columns: 1.1fr 0.9fr; align-items: center; }
+    .booking-open .planner-days { grid-auto-columns: minmax(10rem, 1fr); }
     .bibi { grid-template-columns: 1.1fr 0.9fr; }
     .bibi > div { padding: 3rem; align-self: center; }
     .section-head { grid-template-columns: 1fr auto; }
