@@ -89,7 +89,7 @@
 
     <section id="bibi" class="bibi">
         <figure class="frame">
-            <img src="{{ asset('images/bibi.jpg') }}" alt="Owca na pastwisku" width="1200" height="901" loading="lazy" decoding="async">
+            <img src="{{ asset('images/bibi.jpg') }}" alt="Bibi, owca stajni" width="868" height="864" loading="lazy" decoding="async">
         </figure>
         <div>
             <p class="eyebrow">Owca stajni</p>
@@ -103,7 +103,7 @@
         <div class="booking-head">
             <p class="eyebrow">Kalendarz</p>
             <h2>Zapisz jazdę.</h2>
-            <p>Wybierz wolną godzinę w planie. Zapis od razu zajmuje konia w kalendarzu stajni na jedną godzinę. Najwcześniej {{ availability.leadHours|default(12) }} godzin wcześniej, do dwóch tygodni do przodu.</p>
+            <p>Wybierz wolną godzinę — formularz otworzy się w oknie. W jednym terminie może jechać kilka osób, każda na innym koniu. Najwcześniej {{ availability.leadHours|default(12) }} godzin wcześniej, do dwóch tygodni do przodu.</p>
             <p>Jeśli godziny nie ma na liście, napisz na <a href="https://www.instagram.com/koniewsrodbrzoz/" rel="noopener noreferrer">Instagramie stajni</a>.</p>
         </div>
 
@@ -132,112 +132,145 @@
                 </div>
 
                 <div class="planner" role="group" aria-label="Wolne terminy">
-                    <div class="planner-days">
-                        {% for day in days %}
-                            <article class="planner-day">
-                                <header>
-                                    <strong>{{ day.weekday|capitalize }}</strong>
-                                    <span>{{ day.dayNum }} {{ day.monthShort }}</span>
-                                    <em>{{ day.slots|length }} {{ day.slots|length == 1 ? 'slot' : (day.slots|length < 5 ? 'sloty' : 'slotów') }}</em>
-                                </header>
-                                <ul>
-                                    {% for slot in day.slots %}
-                                        <li>
-                                            <button
-                                                type="button"
-                                                class="slot-pick{% if values.start|default('') == slot.start %} is-on{% endif %}"
-                                                data-start="{{ slot.start }}"
-                                                data-horses="{{ slot.horseIds }}"
-                                                data-label="{{ day.label }}, {{ slot.time }}"
-                                                aria-pressed="{{ values.start|default('') == slot.start ? 'true' : 'false' }}"
-                                            >
-                                                <span class="slot-time">{{ slot.time }}</span>
-                                                <span class="slot-hint">Wolne</span>
-                                            </button>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </article>
-                        {% else %}
-                            <p class="planner-empty">W tym oknie nie ma wolnych godzin. Napisz na Instagramie albo zajrzyj później.</p>
-                        {% endfor %}
+                    <div class="planner-bar">
+                        <p class="planner-choice" data-pick-label>
+                            Kliknij godzinę. W jednym terminie może jechać kilka osób — każda na innym koniu.
+                        </p>
+                        <div class="planner-nav">
+                            <button type="button" data-plan-dir="-1" aria-label="Wcześniejsze dni">←</button>
+                            <button type="button" data-plan-dir="1" aria-label="Późniejsze dni">→</button>
+                        </div>
                     </div>
-                    <p class="planner-choice" data-pick-label>
-                        {% if values.start|default('') %}
-                            Wybrano termin.
-                        {% else %}
-                            Kliknij godzinę w planie.
-                        {% endif %}
-                    </p>
+                    <div class="planner-scroller" data-plan-scroll tabindex="0">
+                        <div class="planner-days">
+                            {% for day in days %}
+                                <article class="planner-day">
+                                    <header>
+                                        <strong>{{ day.weekday|capitalize }}</strong>
+                                        <span>{{ day.dayNum }} {{ day.monthShort }}</span>
+                                        <em>{{ day.slots|length }} {{ day.slots|length == 1 ? 'slot' : (day.slots|length < 5 ? 'sloty' : 'slotów') }}</em>
+                                    </header>
+                                    <ul>
+                                        {% for slot in day.slots %}
+                                            {% set horseCount = slot.horses|length %}
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    class="slot-pick{% if values.start|default('') == slot.start %} is-on{% endif %}"
+                                                    data-start="{{ slot.start }}"
+                                                    data-horses="{{ slot.horseIds }}"
+                                                    data-label="{{ day.label }}, {{ slot.time }}"
+                                                    aria-pressed="{{ values.start|default('') == slot.start ? 'true' : 'false' }}"
+                                                >
+                                                    <span class="slot-time">{{ slot.time }}</span>
+                                                    <span class="slot-hint">{{ horseCount }} {{ horseCount == 1 ? 'koń' : (horseCount < 5 ? 'konie' : 'koni') }}</span>
+                                                </button>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </article>
+                            {% else %}
+                                <p class="planner-empty">W tym oknie nie ma wolnych godzin. Napisz na Instagramie albo zajrzyj później.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
                     <input type="hidden" id="slot" name="start" value="{{ values.start|default('') }}" required>
-                    {% if errors.start|default %}<p class="field-error">{{ errors.start }}</p>{% endif %}
+                    {% if errors.start|default %}<p class="field-error planner-error">{{ errors.start }}</p>{% endif %}
                 </div>
 
-                <div class="card booking-details">
-                    <fieldset class="kinds">
-                        <legend>Kto jedzie</legend>
-                        <label><input type="radio" name="rider_kind" value="child" {% if values.rider_kind|default('child') != 'adult' %}checked{% endif %}> Dziecko</label>
-                        <label><input type="radio" name="rider_kind" value="adult" {% if values.rider_kind|default('') == 'adult' %}checked{% endif %}> Dorosły</label>
-                    </fieldset>
-                    {% if errors.rider_kind|default %}<p class="field-error">{{ errors.rider_kind }}</p>{% endif %}
+                <div
+                    class="booking-modal{% if errors and values.start|default('') %} is-open{% endif %}"
+                    data-booking-modal
+                    {% if not (errors and values.start|default('')) %}hidden{% endif %}
+                >
+                    <button type="button" class="booking-modal-scrim" data-modal-close aria-label="Zamknij"></button>
+                    <div class="booking-modal-dialog card" role="dialog" aria-modal="true" aria-labelledby="booking-modal-title">
+                        <div class="booking-modal-head">
+                            <div>
+                                <p class="eyebrow">Zapis na jazdę</p>
+                                <h2 id="booking-modal-title" data-modal-title>
+                                    {% if values.start|default('') %}
+                                        Wybrany termin
+                                    {% else %}
+                                        Uzupełnij dane
+                                    {% endif %}
+                                </h2>
+                            </div>
+                            <button type="button" class="text-link" data-modal-close>Zamknij</button>
+                        </div>
 
-                    <div class="two">
+                        <p class="meta booking-modal-note">
+                            W tym samym terminie może jechać kilka osób — każda na innym wolnym koniu. Po zapisie godzina zostaje na planie, jeśli zostały jeszcze konie.
+                        </p>
+
+                        <fieldset class="kinds">
+                            <legend>Kto jedzie</legend>
+                            <label><input type="radio" name="rider_kind" value="child" {% if values.rider_kind|default('child') != 'adult' %}checked{% endif %}> Dziecko</label>
+                            <label><input type="radio" name="rider_kind" value="adult" {% if values.rider_kind|default('') == 'adult' %}checked{% endif %}> Dorosły</label>
+                        </fieldset>
+                        {% if errors.rider_kind|default %}<p class="field-error">{{ errors.rider_kind }}</p>{% endif %}
+
+                        <div class="two">
+                            <label class="field">
+                                <span>Imię jeźdźca</span>
+                                <input name="first_name" autocomplete="given-name" required maxlength="60" value="{{ values.first_name|default('') }}">
+                            </label>
+                            <label class="field">
+                                <span>Nazwisko</span>
+                                <input name="last_name" autocomplete="family-name" required maxlength="60" value="{{ values.last_name|default('') }}">
+                            </label>
+                        </div>
+                        {% if errors.name|default %}<p class="field-error">{{ errors.name }}</p>{% endif %}
+
+                        <div data-guardian {% if values.rider_kind|default('child') == 'adult' %}hidden{% endif %}>
+                            <label class="field">
+                                <span>Opiekun</span>
+                                <input name="guardian_name" autocomplete="name" maxlength="60" value="{{ values.guardian_name|default('') }}">
+                            </label>
+                            {% if errors.guardian_name|default %}<p class="field-error">{{ errors.guardian_name }}</p>{% endif %}
+                        </div>
+
+                        <div class="two">
+                            <label class="field">
+                                <span>Telefon</span>
+                                <input name="phone" type="tel" autocomplete="tel" required maxlength="20" value="{{ values.phone|default('') }}">
+                            </label>
+                            <label class="field">
+                                <span>E-mail</span>
+                                <input name="email" type="email" autocomplete="email" required maxlength="120" value="{{ values.email|default('') }}">
+                            </label>
+                        </div>
+                        {% if errors.phone|default %}<p class="field-error">{{ errors.phone }}</p>{% endif %}
+                        {% if errors.email|default %}<p class="field-error">{{ errors.email }}</p>{% endif %}
+
                         <label class="field">
-                            <span>Imię jeźdźca</span>
-                            <input name="first_name" autocomplete="given-name" required maxlength="60" value="{{ values.first_name|default('') }}">
+                            <span>Koń</span>
+                            <select id="horse" name="horse_id">
+                                <option value="">Bez znaczenia — dobierzcie</option>
+                                {% for horse in horses %}
+                                    <option value="{{ horse.id }}" {% if values.horse_id|default('') == horse.id %}selected{% endif %}>{{ horse.name }}</option>
+                                {% endfor %}
+                            </select>
                         </label>
+                        {% if errors.horse_id|default %}<p class="field-error">{{ errors.horse_id }}</p>{% endif %}
+
                         <label class="field">
-                            <span>Nazwisko</span>
-                            <input name="last_name" autocomplete="family-name" required maxlength="60" value="{{ values.last_name|default('') }}">
+                            <span>Wiadomość <em>opcjonalnie</em></span>
+                            <textarea name="note" rows="3" maxlength="500">{{ values.note|default('') }}</textarea>
                         </label>
+                        {% if errors.note|default %}<p class="field-error">{{ errors.note }}</p>{% endif %}
+
+                        <label class="check">
+                            <input type="checkbox" name="consent" value="1" {% if values.consent|default(false) %}checked{% endif %}>
+                            <span>Zgadzam się na zapis imienia, telefonu i e-maila w kalendarzu jazd, żeby zrealizować lekcję. <a href="{{ path('page_privacy') }}">Polityka prywatności</a>.</span>
+                        </label>
+                        {% if errors.consent|default %}<p class="field-error">{{ errors.consent }}</p>{% endif %}
+
+                        <div class="booking-modal-actions">
+                            <button type="button" class="button ghost" data-modal-close>Anuluj</button>
+                            <button class="button" type="submit">Zapisz jazdę</button>
+                        </div>
                     </div>
-                    {% if errors.name|default %}<p class="field-error">{{ errors.name }}</p>{% endif %}
-
-                    <div data-guardian {% if values.rider_kind|default('child') == 'adult' %}hidden{% endif %}>
-                        <label class="field">
-                            <span>Opiekun</span>
-                            <input name="guardian_name" autocomplete="name" maxlength="60" value="{{ values.guardian_name|default('') }}">
-                        </label>
-                        {% if errors.guardian_name|default %}<p class="field-error">{{ errors.guardian_name }}</p>{% endif %}
-                    </div>
-
-                    <div class="two">
-                        <label class="field">
-                            <span>Telefon</span>
-                            <input name="phone" type="tel" autocomplete="tel" required maxlength="20" value="{{ values.phone|default('') }}">
-                        </label>
-                        <label class="field">
-                            <span>E-mail</span>
-                            <input name="email" type="email" autocomplete="email" required maxlength="120" value="{{ values.email|default('') }}">
-                        </label>
-                    </div>
-                    {% if errors.phone|default %}<p class="field-error">{{ errors.phone }}</p>{% endif %}
-                    {% if errors.email|default %}<p class="field-error">{{ errors.email }}</p>{% endif %}
-
-                    <label class="field">
-                        <span>Koń</span>
-                        <select id="horse" name="horse_id">
-                            <option value="">Bez znaczenia — dobierzcie</option>
-                            {% for horse in horses %}
-                                <option value="{{ horse.id }}" {% if values.horse_id|default('') == horse.id %}selected{% endif %}>{{ horse.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </label>
-                    {% if errors.horse_id|default %}<p class="field-error">{{ errors.horse_id }}</p>{% endif %}
-
-                    <label class="field">
-                        <span>Wiadomość <em>opcjonalnie</em></span>
-                        <textarea name="note" rows="3" maxlength="500">{{ values.note|default('') }}</textarea>
-                    </label>
-                    {% if errors.note|default %}<p class="field-error">{{ errors.note }}</p>{% endif %}
-
-                    <label class="check">
-                        <input type="checkbox" name="consent" value="1" {% if values.consent|default(false) %}checked{% endif %}>
-                        <span>Zgadzam się na zapis imienia, telefonu i e-maila w kalendarzu jazd, żeby zrealizować lekcję. <a href="{{ path('page_privacy') }}">Polityka prywatności</a>.</span>
-                    </label>
-                    {% if errors.consent|default %}<p class="field-error">{{ errors.consent }}</p>{% endif %}
-
-                    <button class="button" type="submit">Zapisz jazdę</button>
                 </div>
             </form>
         {% endif %}
@@ -291,9 +324,12 @@
     var slot = form.querySelector('#slot');
     var horse = form.querySelector('#horse');
     var label = form.querySelector('[data-pick-label]');
+    var title = form.querySelector('[data-modal-title]');
+    var modal = form.querySelector('[data-booking-modal]');
     var picks = Array.prototype.slice.call(form.querySelectorAll('.slot-pick'));
     var guardian = form.querySelector('[data-guardian]');
     var kinds = form.querySelectorAll('input[name="rider_kind"]');
+    var lastFocus = null;
 
     function syncKind() {
         var picked = form.querySelector('input[name="rider_kind"]:checked');
@@ -302,7 +338,7 @@
     kinds.forEach(function (input) { input.addEventListener('change', syncKind); });
     syncKind();
 
-    if (!slot || !horse) return;
+    if (!slot || !horse || !modal) return;
     var all = Array.prototype.map.call(horse.options, function (opt) {
         return { value: opt.value, text: opt.text };
     });
@@ -325,7 +361,24 @@
         });
         if (current && Array.prototype.some.call(horse.options, function (opt) { return opt.value === current; })) {
             horse.value = current;
+        } else {
+            horse.value = '';
         }
+    }
+
+    function openModal() {
+        modal.hidden = false;
+        modal.classList.add('is-open');
+        document.body.classList.add('modal-open');
+        var focusable = modal.querySelector('.booking-modal-dialog input:not([type="hidden"]), .booking-modal-dialog select, .booking-modal-dialog textarea');
+        if (focusable) focusable.focus();
+    }
+
+    function closeModal() {
+        modal.hidden = true;
+        modal.classList.remove('is-open');
+        document.body.classList.remove('modal-open');
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
     }
 
     function selectPick(button) {
@@ -335,23 +388,66 @@
             pick.setAttribute('aria-pressed', on ? 'true' : 'false');
         });
         slot.value = button ? button.getAttribute('data-start') || '' : '';
+        var when = button ? (button.getAttribute('data-label') || button.textContent.trim()) : '';
+        if (title) title.textContent = when || 'Uzupełnij dane';
         if (label) {
             label.textContent = button
-                ? 'Wybrano: ' + (button.getAttribute('data-label') || button.textContent.trim())
-                : 'Kliknij godzinę w planie.';
+                ? 'Wybrano: ' + when + '. Możesz zapisać kolejną osobę na ten sam termin, jeśli zostały konie.'
+                : 'Kliknij godzinę. W jednym terminie może jechać kilka osób — każda na innym koniu.';
         }
         syncHorses();
+        if (button) openModal();
     }
 
     picks.forEach(function (button) {
         button.addEventListener('click', function () {
-            selectPick(button.classList.contains('is-on') ? null : button);
+            lastFocus = button;
+            selectPick(button);
         });
     });
 
-    var preselected = form.querySelector('.slot-pick.is-on');
-    if (preselected) selectPick(preselected);
-    else syncHorses();
+    form.querySelectorAll('[data-modal-close]').forEach(function (button) {
+        button.addEventListener('click', closeModal);
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+    });
+
+    if (modal.classList.contains('is-open') || (slot.value && form.querySelector('.slot-pick.is-on'))) {
+        var preselected = form.querySelector('.slot-pick.is-on');
+        if (preselected) {
+            lastFocus = preselected;
+            selectPick(preselected);
+        } else {
+            syncHorses();
+            openModal();
+        }
+    } else {
+        syncHorses();
+    }
+
+    var scroller = form.querySelector('[data-plan-scroll]');
+    var navButtons = Array.prototype.slice.call(form.querySelectorAll('[data-plan-dir]'));
+    function syncPlanNav() {
+        if (!scroller) return;
+        var max = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+        navButtons.forEach(function (button) {
+            var dir = Number(button.getAttribute('data-plan-dir'));
+            button.disabled = dir < 0 ? scroller.scrollLeft <= 2 : scroller.scrollLeft >= max - 2;
+        });
+    }
+    if (scroller && navButtons.length) {
+        navButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var dir = Number(button.getAttribute('data-plan-dir'));
+                var step = Math.max(scroller.clientWidth * 0.8, 11 * 16);
+                scroller.scrollBy({ left: dir * step, behavior: 'smooth' });
+            });
+        });
+        scroller.addEventListener('scroll', syncPlanNav, { passive: true });
+        window.addEventListener('resize', syncPlanNav);
+        syncPlanNav();
+    }
 })();
 (function () {
     var root = document.querySelector('[data-slideshow]');

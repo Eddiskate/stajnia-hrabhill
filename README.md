@@ -11,7 +11,7 @@ Strona szkoły jazdy konnej: one-page o stajni, blog z CMS (ten sam silnik co we
 - Blog: `/artykuly`, wpis `/artykuly/artykul/{slug}`, kategoria `/artykuly/{slug}`
 - Formularz terminów woła `jazdy-konne` (`GET /api/public/slots`, `POST /api/public/reservations`)
 
-Na stronie są zdjęcia szkoły, Kseni i Rychu. Brzozy (SeppVei, CC0) i owca (Unsplash) to nadal kadry nastrojowe — owcy na zdjęciu nie podpisuj jako Bibi.
+Na stronie są zdjęcia szkoły, Kseni, Rychu i Bibi. Brzozy w sekcji o szkole to kadr nastrojowy (SeppVei, CC0).
 
 ## Lokalnie
 

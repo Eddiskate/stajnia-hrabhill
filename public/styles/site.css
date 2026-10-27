@@ -207,28 +207,88 @@ em { font-style: italic; }
 .bibi a { color: #f0d2bf; }
 
 .booking { align-items: start; }
-.booking-open {
+.booking-open.section {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: 0;
     display: grid;
     gap: 1.5rem;
+    overflow-x: hidden;
+}
+.booking-open.section > * {
+    min-width: 0;
+    max-width: 100%;
+}
+.booking-open .booking-head,
+.booking-open > .banner,
+.booking-open .booking-details,
+.booking-open .planner-bar,
+.booking-open .planner-error {
+    width: min(var(--measure), calc(100% - 2.5rem));
+    max-width: min(var(--measure), calc(100% - 2.5rem));
+    margin-inline: auto;
+    justify-self: center;
 }
 .booking-head { max-width: 40rem; }
 .booking-form {
     display: grid;
     gap: 1.5rem;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
 }
 .planner {
     background: var(--paper-2);
+    border-block: 1px solid var(--line);
+    padding: 0.9rem 0 1rem;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+.planner-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+}
+.planner-nav { display: flex; gap: 0.4rem; }
+.planner-nav button {
+    width: 2.6rem;
+    height: 2.6rem;
     border: 1px solid var(--line);
-    padding: 0.85rem;
+    background: var(--cream);
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+}
+.planner-nav button:hover { border-color: var(--moss); }
+.planner-nav button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+.planner-scroller {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-inline: 1.25rem;
+    scrollbar-width: thin;
+    box-sizing: border-box;
 }
 .planner-days {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(9.2rem, 1fr);
+    grid-auto-columns: 10.5rem;
     gap: 0.65rem;
-    overflow-x: auto;
-    padding-bottom: 0.35rem;
-    scroll-snap-type: x proximity;
+    width: max-content;
+    padding-bottom: 0.25rem;
 }
 .planner-day {
     background: var(--cream);
@@ -296,9 +356,10 @@ em { font-style: italic; }
 }
 .slot-pick.is-on .slot-hint { color: var(--moss); }
 .planner-choice {
-    margin: 0.85rem 0 0;
+    margin: 0;
     color: var(--muted);
     font-size: 0.95rem;
+    flex: 1 1 14rem;
 }
 .planner-empty {
     margin: 0;
@@ -306,7 +367,52 @@ em { font-style: italic; }
     color: var(--muted);
     grid-column: 1 / -1;
 }
-.booking-details { max-width: 36rem; }
+.planner-error { margin-top: 0.75rem; }
+.booking-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+}
+.booking-modal[hidden] { display: none; }
+.booking-modal-scrim {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background: rgba(28, 25, 20, 0.48);
+    cursor: pointer;
+}
+.booking-modal-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(34rem, 100%);
+    max-height: min(92vh, 52rem);
+    overflow: auto;
+    margin: 0;
+}
+.booking-modal-head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.6rem;
+}
+.booking-modal-head h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 3vw, 1.9rem);
+}
+.booking-modal-note { margin: 0 0 1rem; }
+.booking-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-top: 0.4rem;
+}
+body.modal-open { overflow: hidden; }
 .card {
     background: var(--cream);
     border: 1px solid var(--line);
@@ -401,7 +507,7 @@ em { font-style: italic; }
     .partner-inner { grid-template-columns: auto 1fr; gap: 3rem; }
     .split, .herd { grid-template-columns: 1.1fr 0.9fr; align-items: center; }
     .booking:not(.booking-open) { grid-template-columns: 1.1fr 0.9fr; align-items: center; }
-    .booking-open .planner-days { grid-auto-columns: minmax(10rem, 1fr); }
+    .planner-days { grid-auto-columns: 11rem; }
     .bibi { grid-template-columns: 1.1fr 0.9fr; }
     .bibi > div { padding: 3rem; align-self: center; }
     .section-head { grid-template-columns: 1fr auto; }
